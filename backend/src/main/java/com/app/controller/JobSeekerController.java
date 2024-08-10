@@ -3,6 +3,8 @@ package com.app.controller;
 import com.app.dto.JobSeekerDTO;
 import com.app.dto.LoginRequest;
 import com.app.entity.JobSeeker;
+import com.app.repository.JobSeekerRepository;
+import com.app.service.EmailService;
 import com.app.service.JobSeekerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,12 @@ public class JobSeekerController {
 
 	@Autowired
 	private JobSeekerService jobSeekerService;
+
+	@Autowired
+	private EmailService emailService;
+
+	@Autowired
+	JobSeekerRepository jobSeekerRepository;
 
 	@PostMapping("/createJobSeeker")
 	public ResponseEntity<JobSeekerDTO> createJobSeeker(@RequestBody JobSeekerDTO jobSeekerDTO) {
@@ -68,6 +76,22 @@ public class JobSeekerController {
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
 		}
+	}
+
+	@GetMapping("/verify-email")
+	public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+		Optional<JobSeeker> jobSeekerOpt = jobSeekerRepository.findByVerificationToken(token);
+
+		if (!jobSeekerOpt.isPresent()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
+		}
+
+		JobSeeker jobSeeker = jobSeekerOpt.get();
+		jobSeeker.setEmailVerified(true);
+		jobSeeker.setVerificationToken(null); // Remove the token after verification
+		jobSeekerRepository.save(jobSeeker);
+
+		return ResponseEntity.ok("Email verified successfully!");
 	}
 
 }

@@ -16,7 +16,7 @@ public interface JobSeekerService {
 	JobSeekerDTO updateJobSeeker(Long jobSeekerId, JobSeekerDTO jobSeekerDTO);
 
 	void deleteJobSeeker(Long jobSeekerId);
-	
+
 	Optional<JobSeeker> login(String email, String password);
-	
+
 }
