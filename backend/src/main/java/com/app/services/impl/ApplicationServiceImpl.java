@@ -1,8 +1,13 @@
 package com.app.services.impl;
 
+import com.app.dto.ApplicationDTO;
 import com.app.entity.Application;
 import com.app.entity.ApplicationStatus;
+import com.app.entity.JobListing;
+import com.app.entity.JobSeeker;
 import com.app.repository.ApplicationRepository;
+import com.app.repository.JobListingRepository;
+import com.app.repository.JobSeekerRepository;
 import com.app.service.ApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +20,26 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Autowired
 	private ApplicationRepository applicationRepository;
 
+	@Autowired
+	private JobSeekerRepository jobSeekerRepository;
+
+	@Autowired
+	private JobListingRepository jobListingRepository;
+
 	@Override
-	public Application saveApplication(Application application) {
+	public Application saveApplication(ApplicationDTO applicationDTO) {
+
+		JobSeeker jobSeeker = jobSeekerRepository.findById(applicationDTO.getJobSeekerId())
+				.orElseThrow(() -> new RuntimeException("Job Seeker not found"));
+
+		JobListing jobListing = jobListingRepository.findById(applicationDTO.getJobId())
+				.orElseThrow(() -> new RuntimeException("Job Listing not found"));
+
+		Application application = new Application();
+		application.setJobSeeker(jobSeeker);
+		application.setJobListing(jobListing);
+		application.setApplicationStatus(ApplicationStatus.APPLIED); // Set default status
+
 		return applicationRepository.save(application);
 	}
 
