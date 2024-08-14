@@ -2,8 +2,18 @@ package com.app.entity;
 
 import java.util.Arrays;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "job_seekers")
@@ -15,48 +25,30 @@ public class JobSeeker {
 	private Long jobSeekerId;
 
 	@NotBlank(message = "Job seeker full name cannot be blank")
-	@Size(max = 100, message = "Full name cannot exceed 100 characters")
 	@Column(name = "jobseeker_fullname", nullable = false)
 	private String jobSeekerFullName;
 
-	@NotBlank(message = "Mobile number cannot be blank")
-	@Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Mobile number should be valid")
-	@Column(name = "jobseeker_mobilenumber", nullable = false, unique = true)
+	@Column(name = "jobseeker_mobilenumber")
 	private String jobSeekerMobileNumber;
 
-	@Size(max = 500, message = "Profile summary cannot exceed 500 characters")
 	@Column(name = "jobseeker_profilesummary")
 	private String jobSeekerProfileSummary;
 
-	@Min(value = 0, message = "Experience cannot be negative")
-	@Max(value = 50, message = "Experience seems unrealistic")
 	@Column(name = "jobseeker_experience")
 	private Long jobSeekerExperience;
 
 	@Lob
-	@Basic(fetch = FetchType.LAZY)
 	@Column(name = "jobseeker_resume")
 	private byte[] jobSeekerResume;
 
-	@NotBlank(message = "Email cannot be blank")
-	@Email(message = "Email should be valid")
-	@Column(name = "jobseeker_email", nullable = false, unique = true)
+	@Column(name = "jobseeker_email")
 	private String jobSeekerEmail;
 
-	@NotBlank(message = "Password cannot be blank")
-	@Size(min = 8, message = "Password should have at least 8 characters")
-	@Column(name = "jobseeker_password", nullable = false)
+	@Column(name = "jobseeker_password")
 	private String jobSeekerPassword;
-
-	@Size(max = 100, message = "Location cannot exceed 100 characters")
-	@Column(name = "jobseeker_location")
-	private String location;
-
-	@Column(name = "verification_token", unique = true)
-	private String verificationToken;
-
-	@Column(name = "email_verified", nullable = false)
-	private boolean emailVerified;
+	
+	@Column(name="jobseeker_location")
+	private String location; // New field for location
 
 	@ManyToOne
 	@JoinColumn(name = "skill_id")
@@ -146,6 +138,8 @@ public class JobSeeker {
 	public void setSubscription(Subscription subscription) {
 		this.subscription = subscription;
 	}
+	
+	
 
 	public String getLocation() {
 		return location;
@@ -155,30 +149,13 @@ public class JobSeeker {
 		this.location = location;
 	}
 
-	public String getVerificationToken() {
-		return verificationToken;
-	}
-
-	public void setVerificationToken(String verificationToken) {
-		this.verificationToken = verificationToken;
-	}
-
-	public boolean isEmailVerified() {
-		return emailVerified;
-	}
-
-	public void setEmailVerified(boolean emailVerified) {
-		this.emailVerified = emailVerified;
-	}
-
 	@Override
 	public String toString() {
 		return "JobSeeker{" + "jobSeekerId=" + jobSeekerId + ", jobSeekerFullName='" + jobSeekerFullName + '\''
 				+ ", jobSeekerMobileNumber='" + jobSeekerMobileNumber + '\'' + ", jobSeekerProfileSummary='"
 				+ jobSeekerProfileSummary + '\'' + ", jobSeekerExperience=" + jobSeekerExperience + ", jobSeekerResume="
 				+ Arrays.toString(jobSeekerResume) + ", jobSeekerEmail='" + jobSeekerEmail + '\''
-				+ ", jobSeekerPassword='" + jobSeekerPassword + '\'' + ", location='" + location + '\''
-				+ ", verificationToken='" + verificationToken + '\'' + ", emailVerified=" + emailVerified + ", skill="
-				+ skill + ", subscription=" + subscription + '}';
+				+ ", jobSeekerPassword='" + jobSeekerPassword + '\'' + ", skill=" + skill + ", subscription="
+				+ subscription + '}';
 	}
 }

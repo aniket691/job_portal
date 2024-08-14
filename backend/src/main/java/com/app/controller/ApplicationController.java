@@ -6,22 +6,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import com.app.dto.ApplicationDTO;
 import com.app.entity.Application;
 import com.app.entity.ApplicationStatus;
 import com.app.service.ApplicationService;
 
 @RestController
 @RequestMapping("/applications")
-@CrossOrigin("*")
 public class ApplicationController {
 
 	@Autowired
 	private ApplicationService applicationService;
 
 	@PostMapping("/createApplication")
-	public ResponseEntity<Application> createApplication(@RequestBody ApplicationDTO applicationDTO) {
-		Application savedApplication = applicationService.saveApplication(applicationDTO);
+	public ResponseEntity<Application> createApplication(@RequestBody Application application) {
+		Application savedApplication = applicationService.saveApplication(application);
 		return ResponseEntity.ok(savedApplication);
 	}
 

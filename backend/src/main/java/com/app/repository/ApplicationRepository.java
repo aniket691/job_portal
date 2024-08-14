@@ -1,11 +1,10 @@
 package com.app.repository;
 
-import java.util.List;
-
+import com.app.entity.Application;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.app.entity.Application;
+import java.util.List;
 
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {

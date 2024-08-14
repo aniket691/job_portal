@@ -66,6 +66,8 @@ public class RecruiterServiceImpl implements RecruiterService {
     public void deleteRecruiter(long recruiterId) {
         recruiterRepository.deleteById(recruiterId);
     }
+    
+    
 
     private RecruiterDTO convertToDTO(Recruiter recruiter) {
         return new RecruiterDTO(
@@ -78,4 +80,13 @@ public class RecruiterServiceImpl implements RecruiterService {
                 recruiter.getCompanyWebsite()
         );
     }
+
+	@Override
+	public Optional<Recruiter> login(String email, String password) {
+		return recruiterRepository.findByRecruiterEmailAndRecruiterPassword(email, password);
+	}
+    
+    
+    
+    
 }

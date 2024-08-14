@@ -8,6 +8,4 @@ import com.app.entity.JobSeeker;
 
 public interface JobSeekerRepository extends JpaRepository<JobSeeker, Long> {
 	Optional<JobSeeker> findByJobSeekerEmailAndJobSeekerPassword(String email, String password);
-
-	Optional<JobSeeker> findByVerificationToken(String token);
 }

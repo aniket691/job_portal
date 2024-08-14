@@ -1,15 +1,21 @@
 package com.app.controller;
 
+import com.app.dto.LoginRequest;
 import com.app.dto.RecruiterDTO;
+import com.app.entity.JobSeeker;
+import com.app.entity.Recruiter;
 import com.app.service.RecruiterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/recruiters")
+@CrossOrigin("*")
 public class RecruiterController {
 
     @Autowired
@@ -45,4 +51,14 @@ public class RecruiterController {
         recruiterService.deleteRecruiter(recruiterId);
         return ResponseEntity.noContent().build();
     }
+    
+    @PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+		Optional<Recruiter> jobSeeker = recruiterService.login(loginRequest.getEmail(), loginRequest.getPassword());
+		if (jobSeeker.isPresent()) {
+			return ResponseEntity.ok(jobSeeker.get());
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+		}
+	}
 }

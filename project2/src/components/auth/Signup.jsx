@@ -137,7 +137,7 @@ function Signup() {
           className="w-1/2 border border-gray-200 rounded-md p-4 my-10"
           onSubmit={handleSubmit}
         >
-          <h1 className="font-bold text-xl mb-5">Sign up</h1>
+          <h1 className="font-bold text-xl mb-5">Job Seeker Sign up</h1>
 
           {/* Full Name */}
           <div className="my-2">

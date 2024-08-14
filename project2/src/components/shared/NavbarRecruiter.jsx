@@ -9,18 +9,18 @@ import { LogOut, User2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 
-const Navbar = () => {
-  const navigate = useNavigate(); // Import useNavigate
-  const isLoggedIn = Boolean(sessionStorage.getItem("jobSeeker"));
+const NavbarRecruiter = () => {
+  const navigate = useNavigate();
+  const isLoggedIn = Boolean(sessionStorage.getItem("recruiter"));
 
   // Function to navigate to the profile page
   const handleNavigate = () => {
-    navigate("/profile"); // Navigate to the profile route
+    navigate("/profile");
   };
 
   const handleLogout = () => {
     sessionStorage.clear();
-    navigate("/login"); // Navigate to the profile route
+    navigate("/loginrecruiter");
   };
 
   return (
@@ -34,15 +34,15 @@ const Navbar = () => {
         <div className="flex items-center gap-5">
           <ul className="flex font-medium items-center gap-5">
             <li><Link to='/'>Home</Link></li>
-            <li><Link to='/jobs'>Jobs</Link></li>
-            <li><Link to='/browse'>Browse</Link></li>
+            <li><Link to='/recruiter/jobs'>Jobs</Link></li>
+            <li><Link to='/recruiter/companies'>Companies</Link></li>
           </ul>
           {!isLoggedIn ? (
             <div className="flex gap-3">
-              <Link to="/login">
+              <Link to="/loginrecruiter">
                 <Button variant="outline">Login</Button>
               </Link>
-              <Link to="/signup">
+              <Link to="/signuprecruiter">
                 <Button className="bg-[#02367B] hover:bg-[#006CA5]">
                   SignUp
                 </Button>
@@ -51,7 +51,7 @@ const Navbar = () => {
           ) : (
             <Popover>
               <PopoverTrigger asChild>
-                <Avatar className="cursor-pointer w-8 h-8">
+                <Avatar className="cursor-pointer w-8 h-8 rounded-full"> {/* Added rounded-full here */}
                   <AvatarImage
                     src="https://github.com/shadcn.png"
                     alt="@shadcn"
@@ -68,12 +68,6 @@ const Navbar = () => {
                 </div>
                 <div className="flex flex-col gap-3 text-gray-600">
                   <div className="flex w-fit items-center gap-2 cursor-pointer">
-                    <User2 />
-                    <Button variant="link" onClick={handleNavigate}>
-                      View Profile
-                    </Button>
-                  </div>
-                  <div className="flex w-fit items-center gap-2 cursor-pointer">
                     <LogOut />
                     <Button variant="link" onClick={handleLogout}>
                       Logout
@@ -89,4 +83,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavbarRecruiter;

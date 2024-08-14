@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Navbar from "../shared/Navbar";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import NavbarRecruiter from "../shared/NavbarRecruiter";
 
 const Label = ({ children }) => (
   <label className="block font-medium text-gray-700 mb-2">{children}</label>
@@ -14,7 +15,7 @@ const Input = (props) => (
   />
 );
 
-function Login() {
+function LoginRecruiter() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -27,16 +28,16 @@ function Login() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/jobseekers/login",
+        "http://localhost:8080/api/recruiters/login",
         { email, password }
       );
 
-      sessionStorage.setItem("jobSeeker", JSON.stringify(response.data));
+      sessionStorage.setItem("recruiter", JSON.stringify(response.data));
       // Handle successful login
       console.log(response.data);
       // Assuming successful login returns a token or user data
       // localStorage.setItem("token", response.data.token);
-      navigate("/browse"); // Redirect to a protected route
+      navigate("/recruiter/companies"); // Redirect to recruiter dashboard
     } catch (err) {
       if (err.response) {
         setError(err.response.data.message || "An error occurred");
@@ -52,13 +53,13 @@ function Login() {
 
   return (
     <div>
-      <Navbar />
+      <NavbarRecruiter/>
       <div className="flex items-center justify-center max-w-7xl mx-auto">
         <form
           className="w-1/2 border border-gray-200 rounded-md p-4 my-10"
           onSubmit={handleSubmit}
         >
-          <h1 className="font-bold text-xl mb-5">Job Seeker Login</h1>
+          <h1 className="font-bold text-xl mb-5">Recruiter Login</h1>
 
           {/* Email */}
           <div className="my-2">
@@ -101,7 +102,7 @@ function Login() {
             <div className="mt-4">
               <span>
                 Don't have an account?
-                <Link to="/signup" className="text-[#006CA5] ml-1">
+                <Link to="/signuprecruiter" className="text-[#006CA5] ml-1">
                   Sign Up
                 </Link>
               </span>
@@ -113,4 +114,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginRecruiter;

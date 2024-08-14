@@ -4,47 +4,53 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 
 function Browse() {
-  const [jobs, setJobs] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [jobs, setJobs] = useState([]); // State to store job listings
+  const [filteredJobs, setFilteredJobs] = useState([]); // State to store filtered job listings
+  const [loading, setLoading] = useState(true); // State to manage loading
+  const [error, setError] = useState(null); // State to manage errors
+  const [searchTerm, setSearchTerm] = useState(""); // State for search input
 
-  const navigate = useNavigate();
-  const jobSeeker = sessionStorage.getItem("jobSeeker");
-  const jobSeekerId = jobSeeker ? JSON.parse(jobSeeker).jobSeekerId : null;
+  const navigate = useNavigate(); // Hook for navigation
+  const jobSeeker = sessionStorage.getItem("jobSeeker"); // Retrieve job seeker details from session storage
+  const jobSeekerId = jobSeeker ? JSON.parse(jobSeeker).jobSeekerId : null; // Extract job seeker ID from the object
 
+  // Redirect to login if user is not logged in
   useEffect(() => {
     if (!jobSeekerId) {
-      navigate("/login");
+      navigate("/login"); // Adjust the path according to your route
     }
   }, [jobSeekerId, navigate]);
 
+  // Fetch job listings from API
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/api/joblistings"
-        );
-        setJobs(response.data);
-        setFilteredJobs(response.data);
-      } catch (error) {
-        console.error("Error fetching job listings:", error);
-        setError(
-          "Failed to fetch job listings. Please check your network connection or the backend server."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (jobSeekerId) {
+      const fetchJobs = async () => {
+        try {
+          const response = await axios.get(
+            "http://localhost:8080/api/joblistings"
+          );
+          setJobs(response.data);
+          setFilteredJobs(response.data); // Initialize filtered jobs with all jobs
+        } catch (error) {
+          console.error("Error fetching job listings:", error);
+          setError(
+            "Failed to fetch job listings. Please check your network connection or the backend server."
+          );
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    fetchJobs();
-  }, []);
+      fetchJobs();
+    }
+  }, [jobSeekerId]);
 
+  // Handle search input change
   const handleSearchChange = (event) => {
     const searchTerm = event.target.value.toLowerCase();
     setSearchTerm(searchTerm);
 
+    // Filter jobs based on search term
     const filtered = jobs.filter((job) =>
       job.jobDescription.toLowerCase().includes(searchTerm)
     );
@@ -57,17 +63,16 @@ function Browse() {
         alert("User not logged in or job seeker ID not found.");
         return;
       }
-      console.log(jobSeekerId);
-      console.log(jobId);
+
+      console.log("Job Seeker ID:", jobSeekerId); // Debug log
+      console.log("Job ID:", jobId); // Debug log
+
       const payload = {
         jobSeekerId: jobSeekerId,
         jobId: jobId,
       };
 
-      await axios.post(
-        "http://localhost:8080/applications/createApplication",
-        payload
-      );
+      await axios.post("http://localhost:8080/applications/apply", payload);
 
       alert("Job applied successfully");
     } catch (error) {
@@ -75,6 +80,14 @@ function Browse() {
       alert("Failed to apply for the job");
     }
   };
+
+  if (!jobSeekerId) {
+    return (
+      <div className="text-center text-gray-500">
+        Please log in to browse jobs.
+      </div>
+    );
+  }
 
   if (loading) {
     return <div className="text-center text-gray-500">Loading...</div>;

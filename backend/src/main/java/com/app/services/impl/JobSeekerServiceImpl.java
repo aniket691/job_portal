@@ -7,7 +7,6 @@ import com.app.entity.Subscription;
 import com.app.repository.JobSeekerRepository;
 import com.app.repository.SkillRepository;
 import com.app.repository.SubscriptionRepository;
-import com.app.service.EmailService;
 import com.app.service.JobSeekerService;
 
 import org.modelmapper.ModelMapper;
@@ -19,7 +18,6 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,9 +34,6 @@ public class JobSeekerServiceImpl implements JobSeekerService {
 
 	@Autowired
 	private ModelMapper modelMapper;
-
-	@Autowired
-	private EmailService emailService;
 
 	@PostConstruct
 	public void setupModelMapper() {
@@ -57,20 +52,18 @@ public class JobSeekerServiceImpl implements JobSeekerService {
 	public JobSeekerDTO createJobSeeker(JobSeekerDTO jobSeekerDTO) {
 		try {
 			JobSeeker jobSeeker = modelMapper.map(jobSeekerDTO, JobSeeker.class);
+			System.out.println("the job seeker id is " + jobSeeker.getJobSeekerId());
+			Skill skill = skillRepository.findById(jobSeekerDTO.getSkillId())
+					.orElseThrow(() -> new EntityNotFoundException("Skill not found"));
+			jobSeeker.setSkill(skill);
 
-			// Generate a verification token
-			String token = UUID.randomUUID().toString();
-			jobSeeker.setVerificationToken(token);
-			jobSeeker.setEmailVerified(false);
+			if (jobSeekerDTO.getSubscriptionId() != null) {
+				Subscription subscription = subscriptionRepository.findById(jobSeekerDTO.getSubscriptionId())
+						.orElseThrow(() -> new EntityNotFoundException("Subscription not found"));
+				jobSeeker.setSubscription(subscription);
+			}
 
-			// Save the JobSeeker
 			JobSeeker savedJobSeeker = jobSeekerRepository.save(jobSeeker);
-
-			// Send verification email
-			String verificationUrl = "http://localhost:8080/api/jobseekers/verify-email?token=" + token;
-			String emailBody = "Please verify your email using the following link: " + verificationUrl;
-			emailService.sendEmail(jobSeeker.getJobSeekerEmail(), "Email Verification", emailBody);
-
 			return modelMapper.map(savedJobSeeker, JobSeekerDTO.class);
 		} catch (DataIntegrityViolationException e) {
 			throw new RuntimeException("Job seeker with the same email or mobile number already exists.");
@@ -92,11 +85,11 @@ public class JobSeekerServiceImpl implements JobSeekerService {
 		return jobSeekers.stream().map(jobSeeker -> modelMapper.map(jobSeeker, JobSeekerDTO.class))
 				.collect(Collectors.toList());
 	}
-
+	
 	@Override
-	public Optional<JobSeeker> login(String email, String password) {
-		return jobSeekerRepository.findByJobSeekerEmailAndJobSeekerPassword(email, password);
-	}
+    public Optional<JobSeeker> login(String email, String password) {
+        return jobSeekerRepository.findByJobSeekerEmailAndJobSeekerPassword(email, password);
+    }
 
 	@Override
 	public JobSeekerDTO updateJobSeeker(Long jobSeekerId, JobSeekerDTO jobSeekerDTO) {
