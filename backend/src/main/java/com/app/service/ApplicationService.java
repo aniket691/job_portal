@@ -16,4 +16,6 @@ public interface ApplicationService {
 	void deleteApplication(Long applicationId);
 
 	List<Application> getAllApplications();
+
+	List<Application> getApplicationsByRecruiterId(Long recruiterId);
 }

@@ -46,4 +46,10 @@ public class ApplicationController {
 	public List<Application> getAllApplications() {
 		return applicationService.getAllApplications();
 	}
+
+	@GetMapping("/recruiter/{recruiterId}")
+	public ResponseEntity<List<Application>> getApplicationsByRecruiterId(@PathVariable Long recruiterId) {
+		List<Application> applications = applicationService.getApplicationsByRecruiterId(recruiterId);
+		return ResponseEntity.ok(applications);
+	}
 }

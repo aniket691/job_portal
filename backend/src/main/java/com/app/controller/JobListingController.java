@@ -47,4 +47,10 @@ public class JobListingController {
 		jobListingService.deleteJobListing(jobId);
 		return ResponseEntity.noContent().build();
 	}
+
+	@GetMapping("/recruiter/{recruiterId}")
+	public ResponseEntity<List<JobListingDTO>> getJobListingsByRecruiterId(@PathVariable Long recruiterId) {
+		List<JobListingDTO> jobListings = jobListingService.getJobListingsByRecruiterId(recruiterId);
+		return ResponseEntity.ok(jobListings);
+	}
 }

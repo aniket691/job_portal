@@ -43,4 +43,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 		// TODO Auto-generated method stub
 		return applicationRepository.findAll();
 	}
+
+	@Override
+	public List<Application> getApplicationsByRecruiterId(Long recruiterId) {
+		return applicationRepository.findByJobListing_Recruiter_RecruiterId(recruiterId);
+	}
 }

@@ -14,4 +14,6 @@ public interface JobListingService {
 	JobListingDTO updateJobListing(Long jobId, JobListingDTO jobListingDTO);
 
 	void deleteJobListing(Long jobId);
+
+	List<JobListingDTO> getJobListingsByRecruiterId(Long recruiterId); // New method
 }
