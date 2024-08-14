@@ -1,28 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Table, TableCaption, TableHeader, TableBody, TableRow, TableCell } from '../ui/table';
-import { Button } from '../ui/button';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import {
+  Table,
+  TableCaption,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "../ui/table";
+import { Button } from "../ui/button";
 
 const CompaniesTable = () => {
   const [jobListings, setJobListings] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
-    jobTitle: '',
-    jobDescription: '',
-    recruiterName: '',
-    skillName: ''
+    jobTitle: "",
+    jobDescription: "",
+    skillName: "",
   });
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
-    // Fetch data from the backend
-    axios.get('http://localhost:8080/api/joblistings') // Replace with your actual endpoint
-      .then((response) => {
-        setJobListings(response.data);
-      })
-      .catch((error) => {
+    const fetchJobListings = async () => {
+      const recruiter = sessionStorage.getItem("recruiter");
+      if (!recruiter) {
+        // If recruiter is not logged in, redirect to login page
+        navigate("/loginrecruiter");
+        return;
+      }
+      try {
+        const recruiterId = JSON.parse(recruiter).recruiterId;
+        const response = await axios.get(
+          `http://localhost:8080/api/joblistings/recruiter/${recruiterId}`
+        );
+        setJobListings(response.data); // Set job listings directly
+      } catch (error) {
         console.error("There was an error fetching the job listings!", error);
-      });
-  }, []);
+      }
+    };
+
+    fetchJobListings();
+  }, [navigate]);
 
   const handleAddNewClick = () => {
     setShowForm(true);
@@ -30,40 +49,57 @@ const CompaniesTable = () => {
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Convert recruiterName and skillName to IDs using backend services if needed
-    axios.post('http://localhost:8080/api/joblistings', {
-      jobTitle: formData.jobTitle,
-      jobDescription: formData.jobDescription,
-      recruiterId: null, // Replace with actual recruiter ID if needed
-      skillId: null // Replace with actual skill ID if needed
-    })
-    .then(response => {
-      setJobListings(prev => [...prev, response.data]);
+    const recruiterId = JSON.parse(
+      sessionStorage.getItem("recruiter")
+    ).recruiterId;
+    try {
+      // Make an API call to add a new job listing
+      await axios.post("http://localhost:8080/api/joblistings", {
+        jobTitle: formData.jobTitle,
+        jobDescription: formData.jobDescription,
+        recruiterId, // Include recruiter ID
+        skillName: formData.skillName, // Include skillName if required
+      });
+
+      // Optionally fetch the updated list of job listings
+      const response = await axios.get(
+        `http://localhost:8080/api/joblistings/recruiter/${recruiterId}`
+      );
+      setJobListings(response.data); // Update the job listings state
+
+      // Clear form data and hide the form
       setShowForm(false);
       setFormData({
-        jobTitle: '',
-        jobDescription: '',
-        recruiterName: '',
-        skillName: ''
+        jobTitle: "",
+        jobDescription: "",
+        skillName: "",
       });
-    })
-    .catch(error => {
-      console.error("There was an error adding the job listing!", error);
-    });
+    } catch (error) {
+      console.error(
+        "There was an error adding the job listing!",
+        error.response || error.message
+      );
+    }
   };
 
   return (
     <div className="overflow-x-auto">
-      <Button onClick={handleAddNewClick} className="mb-4 p-2 text-white rounded">
-        Add New Company
+      <Button
+        onClick={handleAddNewClick}
+        className="mb-4 p-2 text-white rounded"
+      >
+        Add New Job
       </Button>
       {showForm && (
-        <form onSubmit={handleFormSubmit} className="mb-4 p-4 border border-gray-300 rounded bg-white">
+        <form
+          onSubmit={handleFormSubmit}
+          className="mb-4 p-4 border border-gray-300 rounded bg-white"
+        >
           <div className="mb-2">
             <label className="block text-sm font-medium mb-1">Job Title</label>
             <input
@@ -76,23 +112,15 @@ const CompaniesTable = () => {
             />
           </div>
           <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">Job Description</label>
+            <label className="block text-sm font-medium mb-1">
+              Job Description
+            </label>
             <textarea
               name="jobDescription"
               value={formData.jobDescription}
               onChange={handleFormChange}
               className="border p-2 w-full"
               required
-            />
-          </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">Recruiter Name</label>
-            <input
-              type="text"
-              name="recruiterName"
-              value={formData.recruiterName}
-              onChange={handleFormChange}
-              className="border p-2 w-full"
             />
           </div>
           <div className="mb-2">
@@ -135,8 +163,8 @@ const CompaniesTable = () => {
                 <TableCell>{job.jobId}</TableCell>
                 <TableCell>{job.jobTitle}</TableCell>
                 <TableCell>{job.jobDescription}</TableCell>
-                <TableCell>{job.recruiterName || 'N/A'}</TableCell>
-                <TableCell>{job.skillName || 'N/A'}</TableCell>
+                <TableCell>{job.recruiter?.companyName || "N/A"}</TableCell>
+                <TableCell>{job.skill?.skillName || "N/A"}</TableCell>
               </TableRow>
             ))
           ) : (

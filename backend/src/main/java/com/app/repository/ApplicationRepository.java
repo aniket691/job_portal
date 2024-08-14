@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
 	List<Application> findByJobListing_JobId(Long jobId);
+
 	// Method to find applications by recruiter ID
-    List<Application> findByJobListing_Recruiter_RecruiterId(Long recruiterId);
+	List<Application> findByJobListing_Recruiter_RecruiterId(Long recruiterId);
+
 }

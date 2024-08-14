@@ -1,13 +1,16 @@
 package com.app.services.impl;
 
 import com.app.dto.JobListingDTO;
+import com.app.dto.JobSeekerDTO;
 import com.app.entity.JobListing;
+import com.app.entity.JobSeeker;
 import com.app.entity.Recruiter;
 import com.app.entity.Skill;
 import com.app.repository.JobListingRepository;
 import com.app.repository.RecruiterRepository;
 import com.app.repository.SkillRepository;
 import com.app.service.JobListingService;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,8 +38,13 @@ public class JobListingServiceImpl implements JobListingService {
 	@PostConstruct
 	public void setupModelMapper() {
 		modelMapper.typeMap(JobListing.class, JobListingDTO.class).addMappings(mapper -> {
-			mapper.map(src -> src.getSkill().getSkillName(), JobListingDTO::setSkillName);
-			mapper.map(src -> src.getRecruiter().getRecruiterEmail(), JobListingDTO::setRecruiterName);
+			mapper.map(src -> src.getSkill().getSkillId(), JobListingDTO::setSkillId);
+			mapper.map(src -> src.getRecruiter().getRecruiterId(), JobListingDTO::setRecruiterId);
+		});
+
+		modelMapper.typeMap(JobSeekerDTO.class, JobSeeker.class).addMappings(mapper -> {
+			mapper.skip(JobSeeker::setSkill);
+			mapper.skip(JobSeeker::setSubscription);
 		});
 	}
 
@@ -44,13 +52,11 @@ public class JobListingServiceImpl implements JobListingService {
 	public JobListingDTO createJobListing(JobListingDTO jobListingDTO) {
 		JobListing jobListing = modelMapper.map(jobListingDTO, JobListing.class);
 
-		// Convert recruiterName to recruiterId and set it to the jobListing
-		Recruiter recruiter = recruiterRepository.findByRecruiterEmail(jobListingDTO.getRecruiterName())
+		Recruiter recruiter = recruiterRepository.findById(jobListingDTO.getRecruiterId())
 				.orElseThrow(() -> new EntityNotFoundException("Recruiter not found"));
 		jobListing.setRecruiter(recruiter);
 
-		// Convert skillName to skillId and set it to the jobListing
-		Skill skill = skillRepository.findBySkillName(jobListingDTO.getSkillName())
+		Skill skill = skillRepository.findById(jobListingDTO.getSkillId())
 				.orElseThrow(() -> new EntityNotFoundException("Skill not found"));
 		jobListing.setSkill(skill);
 
@@ -80,13 +86,11 @@ public class JobListingServiceImpl implements JobListingService {
 		jobListing.setJobTitle(jobListingDTO.getJobTitle());
 		jobListing.setJobDescription(jobListingDTO.getJobDescription());
 
-		// Convert recruiterName to recruiterId and update the jobListing
-		Recruiter recruiter = recruiterRepository.findByRecruiterEmail(jobListingDTO.getRecruiterName())
+		Recruiter recruiter = recruiterRepository.findById(jobListingDTO.getRecruiterId())
 				.orElseThrow(() -> new EntityNotFoundException("Recruiter not found"));
 		jobListing.setRecruiter(recruiter);
 
-		// Convert skillName to skillId and update the jobListing
-		Skill skill = skillRepository.findBySkillName(jobListingDTO.getSkillName())
+		Skill skill = skillRepository.findById(jobListingDTO.getSkillId())
 				.orElseThrow(() -> new EntityNotFoundException("Skill not found"));
 		jobListing.setSkill(skill);
 
@@ -104,9 +108,11 @@ public class JobListingServiceImpl implements JobListingService {
 	@Override
 	public List<JobListingDTO> getJobListingsByRecruiterId(Long recruiterId) {
 		List<JobListing> jobListings = jobListingRepository.findByRecruiterRecruiterId(recruiterId);
+
 		if (jobListings.isEmpty()) {
 			throw new EntityNotFoundException("No job listings found for the given recruiter ID");
 		}
+
 		return jobListings.stream().map(jobListing -> modelMapper.map(jobListing, JobListingDTO.class))
 				.collect(Collectors.toList());
 	}

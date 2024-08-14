@@ -33,9 +33,15 @@ const NavbarRecruiter = () => {
         </div>
         <div className="flex items-center gap-5">
           <ul className="flex font-medium items-center gap-5">
-            <li><Link to='/'>Home</Link></li>
-            <li><Link to='/recruiter/jobs'>Jobs</Link></li>
-            <li><Link to='/recruiter/companies'>Companies</Link></li>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/recruiter/companies">Companies</Link>
+            </li>
+            <li>
+              <Link to="/recruiter/applications">Show Applications</Link>
+            </li>
           </ul>
           {!isLoggedIn ? (
             <div className="flex gap-3">
@@ -51,7 +57,9 @@ const NavbarRecruiter = () => {
           ) : (
             <Popover>
               <PopoverTrigger asChild>
-                <Avatar className="cursor-pointer w-8 h-8 rounded-full"> {/* Added rounded-full here */}
+                <Avatar className="cursor-pointer w-8 h-8 rounded-full">
+                  {" "}
+                  {/* Added rounded-full here */}
                   <AvatarImage
                     src="https://github.com/shadcn.png"
                     alt="@shadcn"

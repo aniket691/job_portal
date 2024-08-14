@@ -3,6 +3,7 @@ import Navbar from "../shared/Navbar";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import countries from "@/utils/countries"; // Import the countries list
+import skills from "@/utils/skills"; // Import the skills list
 
 const Label = ({ children }) => (
   <label className="block font-medium text-gray-700 mb-2">{children}</label>
@@ -34,11 +35,11 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
-  const [resume, setResume] = useState(""); // Treat as a base64 string or empty for simplicity
+  const [resume, setResume] = useState(""); 
   const [profileSummary, setProfileSummary] = useState("");
   const [experience, setExperience] = useState(0);
-  const [skillId, setSkillId] = useState(1); // Example skillId, can be dynamic
-  const [location, setLocation] = useState(""); // New state for location
+  const [skillId, setSkillId] = useState(""); // Updated to string
+  const [location, setLocation] = useState(""); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -62,16 +63,16 @@ function Signup() {
         setProfileSummary(value);
         break;
       case "experience":
-        setExperience(parseInt(value, 10)); // Parse experience as a number
+        setExperience(parseInt(value, 10)); 
         break;
       case "resume":
-        setResume(value); // Assume resume is a base64 string or empty for simplicity
+        setResume(value);
         break;
       case "skillId":
-        setSkillId(parseInt(value, 10)); // Assume skillId is selected dynamically
+        setSkillId(value); // Updated to handle string
         break;
       case "location":
-        setLocation(value); // Handle location change
+        setLocation(value);
         break;
       default:
         break;
@@ -88,7 +89,8 @@ function Signup() {
       !mobileNumber ||
       !profileSummary ||
       experience < 0 ||
-      !location
+      !location ||
+      !skillId // Ensure skill is selected
     ) {
       setError("Please fill all required fields.");
       return;
@@ -99,16 +101,16 @@ function Signup() {
     setSuccess("");
 
     const jobSeekerData = {
-      jobSeekerId: 0, // Assuming ID is auto-generated on the backend
+      jobSeekerId: 0,
       jobSeekerFullName: fullName,
       jobSeekerMobileNumber: mobileNumber,
       jobSeekerProfileSummary: profileSummary,
       jobSeekerExperience: experience,
-      jobSeekerResume: [resume], // Assuming resume is a base64 string or empty array
+      jobSeekerResume: [resume],
       jobSeekerEmail: email,
       jobSeekerPassword: password,
-      skillId: skillId,
-      location: location, // Include location in the request body
+      skillId: parseInt(skillId, 10), // Convert to number before sending
+      location: location,
     };
 
     try {
@@ -225,14 +227,19 @@ function Signup() {
 
           {/* Skill ID */}
           <div className="my-2">
-            <Label>Skill ID</Label>
-            <Input
-              type="number"
+            <Label>Skill</Label>
+            <Select
               name="skillId"
-              placeholder="Enter your skill ID"
               value={skillId}
               onChange={handleInputChange}
-            />
+            >
+              <option value="">Select your skill</option>
+              {skills.map((skill) => (
+                <option key={skill.id} value={skill.id}>
+                  {skill.name}
+                </option>
+              ))}
+            </Select>
           </div>
 
           {/* Location */}
