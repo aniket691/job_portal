@@ -9,12 +9,13 @@ public class RecruiterDTO {
     private String companyLocation;
     private String companyIndustry;
     private String companyWebsite;
+    private String userType; // Add this field
 
     // Constructors
     public RecruiterDTO() {}
 
     public RecruiterDTO(Long recruiterId, String companyName, String recruiterEmail, String recruiterPassword, 
-                        String companyLocation, String companyIndustry, String companyWebsite) {
+                        String companyLocation, String companyIndustry, String companyWebsite, String userType) {
         this.recruiterId = recruiterId;
         this.companyName = companyName;
         this.recruiterEmail = recruiterEmail;
@@ -22,6 +23,7 @@ public class RecruiterDTO {
         this.companyLocation = companyLocation;
         this.companyIndustry = companyIndustry;
         this.companyWebsite = companyWebsite;
+        this.userType = userType; // Initialize this field
     }
 
     // Getters and Setters
@@ -79,5 +81,13 @@ public class RecruiterDTO {
 
     public void setCompanyWebsite(String companyWebsite) {
         this.companyWebsite = companyWebsite;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 }

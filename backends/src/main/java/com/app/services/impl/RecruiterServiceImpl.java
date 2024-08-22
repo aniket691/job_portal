@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.app.dto.RecruiterDTO;
 import com.app.entity.Recruiter;
+import com.app.entity.UserType;
 import com.app.repository.RecruiterRepository;
 import com.app.service.RecruiterService;
 
@@ -27,7 +28,8 @@ public class RecruiterServiceImpl implements RecruiterService {
                 recruiterDTO.getRecruiterPassword(),
                 recruiterDTO.getCompanyLocation(),
                 recruiterDTO.getCompanyIndustry(),
-                recruiterDTO.getCompanyWebsite()
+                recruiterDTO.getCompanyWebsite(),
+                UserType.RECRUITER // Set the UserType to RECRUITER
         );
         Recruiter savedRecruiter = recruiterRepository.save(recruiter);
         return convertToDTO(savedRecruiter);
@@ -56,6 +58,7 @@ public class RecruiterServiceImpl implements RecruiterService {
             recruiter.setCompanyLocation(recruiterDTO.getCompanyLocation());
             recruiter.setCompanyIndustry(recruiterDTO.getCompanyIndustry());
             recruiter.setCompanyWebsite(recruiterDTO.getCompanyWebsite());
+            recruiter.setUserType(UserType.RECRUITER); // Ensure the UserType is set
             Recruiter updatedRecruiter = recruiterRepository.save(recruiter);
             return convertToDTO(updatedRecruiter);
         }
@@ -66,8 +69,6 @@ public class RecruiterServiceImpl implements RecruiterService {
     public void deleteRecruiter(long recruiterId) {
         recruiterRepository.deleteById(recruiterId);
     }
-    
-    
 
     private RecruiterDTO convertToDTO(Recruiter recruiter) {
         return new RecruiterDTO(
@@ -77,16 +78,14 @@ public class RecruiterServiceImpl implements RecruiterService {
                 recruiter.getRecruiterPassword(),
                 recruiter.getCompanyLocation(),
                 recruiter.getCompanyIndustry(),
-                recruiter.getCompanyWebsite()
+                recruiter.getCompanyWebsite(),
+                recruiter.getUserType().name() // Convert enum to string
         );
     }
 
-	@Override
-	public Optional<Recruiter> login(String email, String password) {
-		return recruiterRepository.findByRecruiterEmailAndRecruiterPassword(email, password);
-	}
-    
-    
-    
-    
+
+    @Override
+    public Optional<Recruiter> login(String email, String password) {
+        return recruiterRepository.findByRecruiterEmailAndRecruiterPassword(email, password);
+    }
 }

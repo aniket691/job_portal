@@ -36,13 +36,18 @@ public class Recruiter {
     @Column(name = "company_website", nullable = false)
     private String companyWebsite;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_type")
+    private UserType userType;
+
     // Constructors
     public Recruiter(long recruiterId, @NotBlank(message = "company name can not be blank") String companyName,
                      @NotBlank(message = "recruiter email can not be blank") String recruiterEmail,
                      @NotBlank(message = "recruiter password can not be blank") String recruiterPassword,
                      @NotBlank(message = "company location can not be blank") String companyLocation,
                      @NotBlank(message = "company industry can not be blank") String companyIndustry,
-                     @NotBlank(message = "company website can not be blank") String companyWebsite) {
+                     @NotBlank(message = "company website can not be blank") String companyWebsite,
+                     UserType userType) {
         super();
         this.recruiterId = recruiterId;
         this.companyName = companyName;
@@ -51,6 +56,7 @@ public class Recruiter {
         this.companyLocation = companyLocation;
         this.companyIndustry = companyIndustry;
         this.companyWebsite = companyWebsite;
+        this.userType = userType;
     }
 
     public Recruiter() {
@@ -114,6 +120,14 @@ public class Recruiter {
         this.companyWebsite = companyWebsite;
     }
 
+    public UserType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
+    }
+
     @Override
     public String toString() {
         return "Recruiter{" +
@@ -124,6 +138,7 @@ public class Recruiter {
                 ", companyLocation='" + companyLocation + '\'' +
                 ", companyIndustry='" + companyIndustry + '\'' +
                 ", companyWebsite='" + companyWebsite + '\'' +
+                ", userType=" + userType +
                 '}';
     }
 }
