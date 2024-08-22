@@ -35,6 +35,7 @@ public class JobListingController {
 		return ResponseEntity.ok(jobListings);
 	}
 
+	
 	@PutMapping("/{jobId}")
 	public ResponseEntity<JobListingDTO> updateJobListing(@PathVariable Long jobId,
 			@RequestBody JobListingDTO jobListingDTO) {
@@ -46,11 +47,5 @@ public class JobListingController {
 	public ResponseEntity<Void> deleteJobListing(@PathVariable Long jobId) {
 		jobListingService.deleteJobListing(jobId);
 		return ResponseEntity.noContent().build();
-	}
-
-	@GetMapping("/recruiter/{recruiterId}")
-	public ResponseEntity<List<JobListingDTO>> getJobListingsByRecruiterId(@PathVariable Long recruiterId) {
-		List<JobListingDTO> jobListings = jobListingService.getJobListingsByRecruiterId(recruiterId);
-		return ResponseEntity.ok(jobListings);
 	}
 }

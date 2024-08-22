@@ -4,11 +4,15 @@ import com.app.dto.JobSeekerDTO;
 import com.app.dto.LoginRequest;
 import com.app.entity.JobSeeker;
 import com.app.service.JobSeekerService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,13 +25,21 @@ public class JobSeekerController {
 	private JobSeekerService jobSeekerService;
 
 	@PostMapping("/createJobSeeker")
-	public ResponseEntity<JobSeekerDTO> createJobSeeker(@RequestBody JobSeekerDTO jobSeekerDTO) {
+	public ResponseEntity<?> createJobSeeker(@RequestPart("jobSeekerDTO") String jobSeekerDTO,
+			@RequestPart("resumeFile") MultipartFile resumeFile) {
+
 		try {
-			JobSeekerDTO createdJobSeeker = jobSeekerService.createJobSeeker(jobSeekerDTO);
+			// Convert the jobSeekerDTO string to an object
+			ObjectMapper objectMapper = new ObjectMapper();
+			JobSeekerDTO jobSeeker = objectMapper.readValue(jobSeekerDTO, JobSeekerDTO.class);
+
+			// Save the job seeker using your service
+			JobSeekerDTO createdJobSeeker = jobSeekerService.createJobSeeker(jobSeeker, resumeFile);
 			return ResponseEntity.ok(createdJobSeeker);
+		} catch (IOException e) {
+			return ResponseEntity.badRequest().body("Error parsing job seeker data: " + e.getMessage());
 		} catch (RuntimeException e) {
-			// Log the error and return a proper response
-			return ResponseEntity.badRequest().body(null);
+			return ResponseEntity.badRequest().body("Error creating job seeker: " + e.getMessage());
 		}
 	}
 
@@ -40,17 +52,19 @@ public class JobSeekerController {
 	@GetMapping
 	public ResponseEntity<List<JobSeekerDTO>> getAllJobSeekers() {
 		List<JobSeekerDTO> jobSeekers = jobSeekerService.getAllJobSeekers();
-		System.out.println(jobSeekers.get(0).getSubscriptionId());
 		return ResponseEntity.ok(jobSeekers);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<JobSeekerDTO> updateJobSeeker(@PathVariable Long id, @RequestBody JobSeekerDTO jobSeekerDTO) {
+	public ResponseEntity<?> updateJobSeeker(@PathVariable Long id,
+			@RequestPart("jobSeekerDTO") JobSeekerDTO jobSeekerDTO,
+			@RequestPart(value = "resumeFile", required = false) MultipartFile resumeFile) {
+
 		try {
-			JobSeekerDTO updatedJobSeeker = jobSeekerService.updateJobSeeker(id, jobSeekerDTO);
+			JobSeekerDTO updatedJobSeeker = jobSeekerService.updateJobSeeker(id, jobSeekerDTO, resumeFile);
 			return ResponseEntity.ok(updatedJobSeeker);
 		} catch (RuntimeException e) {
-			return ResponseEntity.badRequest().body(new JobSeekerDTO());
+			return ResponseEntity.badRequest().body("Error updating job seeker: " + e.getMessage());
 		}
 	}
 
@@ -69,5 +83,4 @@ public class JobSeekerController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
 		}
 	}
-
 }

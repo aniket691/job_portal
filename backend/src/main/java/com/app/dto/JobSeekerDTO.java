@@ -7,7 +7,7 @@ public class JobSeekerDTO {
 	private String jobSeekerMobileNumber;
 	private String jobSeekerProfileSummary;
 	private Long jobSeekerExperience;
-	private byte[] jobSeekerResume;
+	private ImageDataDTO jobSeekerResume; // Updated to ImageDataDTO
 	private String jobSeekerEmail;
 	private String jobSeekerPassword;
 	private String location;
@@ -19,8 +19,8 @@ public class JobSeekerDTO {
 	}
 
 	public JobSeekerDTO(Long jobSeekerId, String jobSeekerFullName, String jobSeekerMobileNumber,
-			String jobSeekerProfileSummary, Long jobSeekerExperience, byte[] jobSeekerResume, String jobSeekerEmail,
-			String jobSeekerPassword, Long skillId, Long subscriptionId) {
+			String jobSeekerProfileSummary, Long jobSeekerExperience, ImageDataDTO jobSeekerResume,
+			String jobSeekerEmail, String jobSeekerPassword, String location, Long skillId, Long subscriptionId) {
 		this.jobSeekerId = jobSeekerId;
 		this.jobSeekerFullName = jobSeekerFullName;
 		this.jobSeekerMobileNumber = jobSeekerMobileNumber;
@@ -29,6 +29,7 @@ public class JobSeekerDTO {
 		this.jobSeekerResume = jobSeekerResume;
 		this.jobSeekerEmail = jobSeekerEmail;
 		this.jobSeekerPassword = jobSeekerPassword;
+		this.location = location;
 		this.skillId = skillId;
 		this.subscriptionId = subscriptionId;
 	}
@@ -74,11 +75,11 @@ public class JobSeekerDTO {
 		this.jobSeekerExperience = jobSeekerExperience;
 	}
 
-	public byte[] getJobSeekerResume() {
+	public ImageDataDTO getJobSeekerResume() {
 		return jobSeekerResume;
 	}
 
-	public void setJobSeekerResume(byte[] jobSeekerResume) {
+	public void setJobSeekerResume(ImageDataDTO jobSeekerResume) {
 		this.jobSeekerResume = jobSeekerResume;
 	}
 
@@ -98,6 +99,14 @@ public class JobSeekerDTO {
 		this.jobSeekerPassword = jobSeekerPassword;
 	}
 
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
 	public Long getSkillId() {
 		return skillId;
 	}
@@ -114,12 +123,12 @@ public class JobSeekerDTO {
 		this.subscriptionId = subscriptionId;
 	}
 
-	public String getLocation() {
-		return location;
+	@Override
+	public String toString() {
+		return "JobSeekerDTO [jobSeekerId=" + jobSeekerId + ", jobSeekerFullName=" + jobSeekerFullName
+				+ ", jobSeekerMobileNumber=" + jobSeekerMobileNumber + ", jobSeekerProfileSummary="
+				+ jobSeekerProfileSummary + ", jobSeekerExperience=" + jobSeekerExperience + ", jobSeekerResume="
+				+ jobSeekerResume + ", jobSeekerEmail=" + jobSeekerEmail + ", jobSeekerPassword=" + jobSeekerPassword
+				+ ", location=" + location + ", skillId=" + skillId + ", subscriptionId=" + subscriptionId + "]";
 	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
 }

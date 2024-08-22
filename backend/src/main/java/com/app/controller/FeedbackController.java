@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/feedbacks")
+@CrossOrigin("*")
 public class FeedbackController {
 
 	@Autowired

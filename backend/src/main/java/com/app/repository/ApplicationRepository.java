@@ -1,16 +1,17 @@
 package com.app.repository;
 
-import com.app.entity.Application;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.app.dto.ApplicationDetailDTO;
+import com.app.entity.Application;
 
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
 	List<Application> findByJobListing_JobId(Long jobId);
 
-	// Method to find applications by recruiter ID
-	List<Application> findByJobListing_Recruiter_RecruiterId(Long recruiterId);
-
+	List<Application> findAllByJobListing_JobIdAndJobSeeker_JobSeekerId(Long jobId, Long jobSeekerId);
 }
